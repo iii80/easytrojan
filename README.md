@@ -145,9 +145,9 @@ IP为1.3.5.7 密码为123456的服务器示例
 
 #### 连接方式 ####
 
-
 客户端不只局限于以下几种，仅需支持trojan连接即可
 ```
+
 
 - 常见客户端连接trojan示例
 >- Windows </br>
@@ -199,10 +199,6 @@ IP为1.3.5.7 密码为123456的服务器示例
     port: 443
     password: 123456
     udp: true
-    sni: 1.3.5.7.nip.io
-    alpn:
-      - h2
-      - http/1.1
     skip-cert-verify: false
 ```
 > 警告：请勿在移动设备及其它除Mac外的ARM设备上使用Clash及不包含UTLS指纹功能的客户端连接trojan
