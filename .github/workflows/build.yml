@@ -1,0 +1,74 @@
+name: Build and Publish Caddy for X86 and ARM
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go for x86
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.21
+
+      - name: Install xcaddy for X86
+        run: |
+          curl -L https://github.com/caddyserver/xcaddy/releases/download/v0.3.5/xcaddy_0.3.5_linux_amd64.tar.gz | tar -zx -C ${{ github.workspace }}
+          export PATH=$PATH:${{ github.workspace }}
+        env:
+          GO111MODULE: "on"
+
+      - name: Build Caddy for X86
+        run: |
+          GOOS=linux GOARCH=amd64 ${{ github.workspace }}/xcaddy build --with github.com/imgk/caddy-trojan
+        working-directory: ${{ github.workspace }}
+
+      - name: Rename x86 binary to caddy_amd64
+        run: mv caddy caddy_amd64
+
+      - name: Build Caddy for ARM
+        run: |
+          GOOS=linux GOARCH=arm64 ${{ github.workspace }}/xcaddy build --with github.com/imgk/caddy-trojan
+        working-directory: ${{ github.workspace }}
+
+      - name: Rename ARM binary to caddy_arm64
+        run: mv caddy caddy_arm64
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: 2.7.5
+          release_name: caddy_trojan
+          body: Release of caddy_trojan binaries.
+          draft: false
+          prerelease: false
+
+      - name: Upload caddy_amd64 binary
+        id: upload_caddy_amd64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: caddy_amd64
+          asset_name: caddy_amd64
+          asset_content_type: application/octet-stream
+
+      - name: Upload caddy_arm64 binary
+        id: upload_caddy_arm64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: caddy_arm64
+          asset_name: caddy_arm64
+          asset_content_type: application/octet-stream
