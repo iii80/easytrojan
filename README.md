@@ -1,14 +1,12 @@
 ![language](https://img.shields.io/badge/language-Shell_&_Go-brightgreen.svg)
-![release](https://img.shields.io/badge/release-v2.0_20221212-blue.svg)
-# EasyTrojan #
+![release](https://img.shields.io/badge/release-v3.0_20231108-blue.svg)
+# EasyTrojan v3.0 #
 
 #### 世界上最简单的Trojan部署脚本，仅需一行命令即可搭建一台代理服务器 ####
 
 - 该项目会自动提供trojan服务所需的免费域名与证书，无需购买、解析等繁琐操作
 
 - 支持RHEL 7、8、9 (CentOS、RedHat、AlmaLinux、RockyLinux)、Debian 9、10、11、12、Ubuntu 16、18、20、22
-
-- 技术原理不做解释，初衷只为解决个人用户与主机商家被阻断连接的问题，降低大量IP被阻断造成的各种后续影响
 
 - 该项目仅限研究用途，用户应根据所在管辖区的当地法律评估自己的法规遵从义务
 
@@ -17,7 +15,7 @@
 #### 首次安装 ####
 请将结尾的password更换为自己的密码，例如 bash easytrojan.sh 123456，安装成功后会返回trojan的连接参数
 ```
-curl https://raw.githubusercontent.com/eastmaple/easytrojan/main/easytrojan.sh -o easytrojan.sh && chmod +x easytrojan.sh && bash easytrojan.sh password
+curl https://raw.githubusercontent.com/autoxtls/easytrojan/main/easytrojan.sh -o easytrojan.sh && chmod +x easytrojan.sh && bash easytrojan.sh password
 ```
 
 #### 放行端口 ####
@@ -38,7 +36,7 @@ sudo ufw allow proto tcp from any to any port 80,443 && sudo iptables -F
 请将结尾的password更换为自己的密码，仅限字母、数字、下划线，非多密码管理用途无需使用
 ```
 # 下载trojan密码管理脚本
-curl https://raw.githubusercontent.com/eastmaple/easytrojan/main/mytrojan.sh -o mytrojan.sh && chmod +x mytrojan.sh
+curl https://raw.githubusercontent.com/autoxtls/easytrojan/main/mytrojan.sh -o mytrojan.sh && chmod +x mytrojan.sh
 
 # 创建密码
 bash mytrojan.sh add password
@@ -65,7 +63,7 @@ bash mytrojan.sh list
 
 #### 重新安装 ####
 ```
-systemctl stop caddy.service && curl https://raw.githubusercontent.com/eastmaple/easytrojan/main/easytrojan.sh -o easytrojan.sh && chmod +x easytrojan.sh && bash easytrojan.sh password
+systemctl stop caddy.service && curl https://raw.githubusercontent.com/autoxtls/easytrojan/main/easytrojan.sh -o easytrojan.sh && chmod +x easytrojan.sh && bash easytrojan.sh password
 ```
 
 #### 完全卸载 ####
@@ -87,8 +85,9 @@ systemctl stop caddy.service && systemctl disable caddy.service && rm -rf /etc/c
 - 免费域名
 
 ```
-通过nip.io提供的免费域名解析服务获取，域名由ServerIP+nip.io组成
-例如你的服务器IP为1.3.5.7，对应的域名则是1.3.5.7.nip.io
+通过tbcache.com提供的免费域名解析服务获取
+例如：
+ip518200520.mobgslb.tbcache.com
 ```
 
 - 指定域名
@@ -96,7 +95,7 @@ systemctl stop caddy.service && systemctl disable caddy.service && rm -rf /etc/c
 仅建议在免费域名被阻断时使用
 ```
 在密码后加入域名即可指定域名重新安装，密码与域名之间应使用空格分隔，执行命令如下：
-systemctl stop caddy.service && curl https://raw.githubusercontent.com/eastmaple/easytrojan/main/easytrojan.sh -o easytrojan.sh && chmod +x easytrojan.sh && bash easytrojan.sh password yourdomain
+systemctl stop caddy.service && curl https://raw.githubusercontent.com/autoxtls/easytrojan/main/easytrojan.sh -o easytrojan.sh && chmod +x easytrojan.sh && bash easytrojan.sh password yourdomain
 
 *当指定域名后，如需切换回免费域名，必须完全卸载脚本，重新执行首次安装命令
 ```
@@ -130,9 +129,10 @@ sudo ufw disable
 
 IP为1.3.5.7 密码为123456的服务器示例
 ```
-地址：1.3.5.7.nip.io  #根据服务器IP生成（即免费域名）
+地址：ip***.mobgslb.tbcache.com  #根据服务器IP生成（即免费域名）
 端口：443
 密码：123456          #安装时设置的密码
+ALPN: h2/http1.1
 ```
 
 - 服务伪装
@@ -143,100 +143,7 @@ IP为1.3.5.7 密码为123456的服务器示例
 
 ---
 
-#### 连接方式 ####
-
-客户端不只局限于以下几种，仅需支持trojan连接即可
-```
-
-
-- 常见客户端连接trojan示例
->- Windows </br>
-> [配置示例](https://testingcf.jsdelivr.net/gh/eastmaple/easytrojan@client/v2rayn-trojan.png) | [V2rayN-Core](https://github.com/2dust/v2rayN/releases) | [加速下载](https://ghproxy.com/https://github.com/2dust/v2rayN/releases/download/6.23/v2rayN-With-Core.zip) 
->- MacOS </br>
-> [配置示例](https://testingcf.jsdelivr.net/gh/eastmaple/easytrojan@client/v2rayu-trojan.png) | [V2rayU](https://github.com/yanue/V2rayU/releases)  | [加速下载-64](https://ghproxy.com/https://github.com/yanue/V2rayU/releases/download/v3.8.0/V2rayU-64.dmg) | [加速下载-arm](https://ghproxy.com/https://github.com/yanue/V2rayU/releases/download/v3.8.0/V2rayU-arm64.dmg)
->- Android </br>
-> [配置示例](https://testingcf.jsdelivr.net/gh/eastmaple/easytrojan@client/v2rayng-trojan.png) | [V2rayNG](https://github.com/2dust/v2rayNG/releases) | [加速下载](https://ghproxy.com/https://github.com/2dust/v2rayNG/releases/download/1.8.5/v2rayNG_1.8.5.apk) 
->- iOS </br>
-> [配置示例](https://testingcf.jsdelivr.net/gh/eastmaple/easytrojan@client/shadowrocket-trojan.png) | [Shadowrocket](https://apps.apple.com/us/app/shadowrocket/id932747118) | [AppStore海外代购](https://www.rocketgirls.space/product)
-
-- OpenWRT passwall [配置示例](https://testingcf.jsdelivr.net/gh/eastmaple/easytrojan@client/passwall-trojan.png)
-
-- Xray连接trojan部分示例
-```
-{
-    ...
-
-    "outbounds": [
-        {
-            "protocol": "trojan",
-            "settings": {
-                "servers": [
-                    {
-                        "address": "1.3.5.7",        #连接trojan的服务器IP或域名
-                        "port": 443,
-                        "password": "123456"         #连接trojan的密码
-                    }
-                ]
-            },
-            "streamSettings": {
-                "network": "tcp",
-                "security": "tls",
-                "tlsSettings": {
-                    "allowInsecure": false,
-                    "serverName": "1.3.5.7.nip.io",  #连接trojan的域名
-                }
-            }
-        }
-    ]
-}
-```
-
-- Clash连接trojan部分示例（仅限非ARM设备）
-```
-- name: "trojan"
-    type: trojan
-    server: 1.3.5.7
-    port: 443
-    password: 123456
-    udp: true
-    skip-cert-verify: false
-```
-> 警告：请勿在移动设备及其它除Mac外的ARM设备上使用Clash及不包含UTLS指纹功能的客户端连接trojan
-
----
-
-#### 用户交流 ####
-[Telegram Group](https://t.me/easytrojan)
-
----
-
-#### 数据报告 ####
-
-自北京时间2022年10月3日起，不断有中国大陆的用户报告基于TLS的代理服务器被封端口。
-
->- 普遍现象：先被封禁443端口，更换端口后会在1~2天的时间内被再次封禁，多次更换端口后服务器IP被阻断
->- 讨论结果：客户端指纹、服务端指纹、连接数量过多、TLS in TLS被识别等，总之众说纷纭，没有解决方案
-
-该项目经过多台服务器测试，以及与部分包含trojan协议的客户端开发者沟通，总结出了相对可靠的抗封锁方案，由于用户的客户端、网络环境差异很大，不保证部署后一定不封禁端口。
-
-> 样本服务器测试数据：
->- 2022年10月初，2台来自境内用户日常使用的Non-TLS代理服务器相继被阻断IP
->- 2022年10月初，2台样本服务器更换为trojan协议，客户端使用路由器连接，稳定运行
->- 2022年10月上，多用户使用移动客户端连接其中1台trojan服务器，必定出现1天内被封端口现象
->- 2022年10月上，排查原因，分析变量，调研多个被封样本，推测出三个最有可能的原因
->- 2022年10月中，逐条更换变量测试，最终确定被封问题来自一个移动端不可描述的原因
->- 2022年10月末，2台服务器在每日约10台设备连接、日流量消耗10~20G的情况下稳定运行
->- 2022年10月末，新购1台封端口重灾区的服务器，并联系了10位使用trojan被封端口的用户，内测该部署方案
->- 2022年11月初，样本服务器中，12台443端口正常，1台被封443端口，原因是客户端跳过了证书验证，更正后稳定运行
->- 2022年11月中，总计13台样本服务器，443端口全部正常，期间有围观用户尝试部署，未收到端口被封反馈
->- 2022年11月末，少量用户在移动设备使用clash客户端连接trojan被封端口，更换为该项目建议的客户端后均稳定运行
->- 2022年11月末，已有超过100台服务器使用该项目部署，暂未收到用户服务器端口被封的反馈
->- 2022年黑色星期五，将该部署方案制作成脚本并发布，并在10天后登上Github Trending总榜
-
-[![Stargazers over time](https://starchart.cc/eastmaple/easytrojan.svg)](https://starchart.cc/eastmaple/easytrojan)
-
----
-
 #### 鸣谢项目 ####
+[EasyTrojan](https://github.com/eastmaple/easytrojan) </br>
 [CaddyServer](https://github.com/caddyserver/caddy) </br>
 [CaddyTrojan](https://github.com/imgk/caddy-trojan)
