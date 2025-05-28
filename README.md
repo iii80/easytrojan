@@ -85,9 +85,9 @@ systemctl stop caddy.service && systemctl disable caddy.service && rm -rf /etc/c
 - 免费域名
 
 ```
-通过tbcache.com提供的免费域名解析服务获取
+通过sslip.io提供的免费域名解析服务获取
 例如：
-ip518200520.mobgslb.tbcache.com
+127.0.0.1.ssip.io
 ```
 
 - 指定域名
@@ -129,7 +129,7 @@ sudo ufw disable
 
 IP为1.3.5.7 密码为123456的服务器示例
 ```
-地址：ip***.mobgslb.tbcache.com  #根据服务器IP生成（即免费域名）
+地址：1.3.5.7.sslip.io  #根据服务器IP生成（即免费域名）
 端口：443
 密码：123456          #安装时设置的密码
 ALPN: h2/http1.1
