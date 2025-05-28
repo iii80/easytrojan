@@ -245,9 +245,9 @@ check_http=$(curl -L http://"$nip_domain")
 
 clear
 
-echo "You have successfully installed EasyTrojan 2.0"
+echo "You have successfully installed EasyTrojan 3.0"
 echo "服务器参数如下:"
-echo "ip: $address_ip"
+echo "ip: $address_ip".nip.io
 echo "port: 443"
 echo "password: $trojan_passwd"
 echo "security: tls"
