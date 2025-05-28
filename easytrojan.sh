@@ -8,7 +8,7 @@
 trojan_passwd=$1
 caddy_domain=$2
 address_ip=$(curl ipv4.ip.sb)
-nip_domain=${address_ip}.nip.io
+nip_domain=${address_ip}.sslip.io
 check_port=$(ss -Hlnp sport = :80 or sport = :443)
 
 [ "$trojan_passwd" = "" ] && { echo "Error: You must enter a trojan's password to run this script"; exit 1; }
@@ -71,7 +71,7 @@ cat > /etc/caddy/Caddyfile <<EOF
     }
 }
 :443, $nip_domain {
-    tls $address_ip@nip.io {
+    tls $address_ip@sslip.io {
         protocols tls1.2 tls1.2
         ciphers TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256 TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
     }
