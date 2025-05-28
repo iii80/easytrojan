@@ -17,7 +17,7 @@
 #### 首次安装 ####
 请将结尾的password更换为自己的密码，例如 bash easytrojan.sh 123456，安装成功后会返回trojan的连接参数
 ```
-curl https://raw.githubusercontent.com/eastmaple/easytrojan/main/easytrojan.sh -o easytrojan.sh && chmod +x easytrojan.sh && bash easytrojan.sh password
+curl https://raw.githubusercontent.com/iii80/easytrojan/main/easytrojan.sh -o easytrojan.sh && chmod +x easytrojan.sh && bash easytrojan.sh password
 ```
 
 #### 放行端口 ####
@@ -31,14 +31,14 @@ sudo ufw allow proto tcp from any to any port 80,443 && sudo iptables -F
 ```
 > 验证端口是否放行 (示例IP应修改为trojan服务器的IP)
 >
-> 通过浏览器访问脚本提供的免费域名，例如1.3.5.7.nip.io </br>
+> 通过浏览器访问脚本提供的免费域名，例如1.3.5.7.sslip.io </br>
 > 如果自动跳转至https，页面显示Service Unavailable，说明端口已放行
 
 #### 密码管理 ####
 请将结尾的password更换为自己的密码，仅限字母、数字、下划线，非多密码管理用途无需使用
 ```
 # 下载trojan密码管理脚本
-curl https://raw.githubusercontent.com/eastmaple/easytrojan/main/mytrojan.sh -o mytrojan.sh && chmod +x mytrojan.sh
+curl https://raw.githubusercontent.com/iii80/easytrojan/main/mytrojan.sh -o mytrojan.sh && chmod +x mytrojan.sh
 
 # 创建密码
 bash mytrojan.sh add password
@@ -65,7 +65,7 @@ bash mytrojan.sh list
 
 #### 重新安装 ####
 ```
-systemctl stop caddy.service && curl https://raw.githubusercontent.com/eastmaple/easytrojan/main/easytrojan.sh -o easytrojan.sh && chmod +x easytrojan.sh && bash easytrojan.sh password
+systemctl stop caddy.service && curl https://raw.githubusercontent.com/iii80/easytrojan/main/easytrojan.sh -o easytrojan.sh && chmod +x easytrojan.sh && bash easytrojan.sh password
 ```
 
 #### 完全卸载 ####
@@ -87,8 +87,8 @@ systemctl stop caddy.service && systemctl disable caddy.service && rm -rf /etc/c
 - 免费域名
 
 ```
-通过nip.io提供的免费域名解析服务获取，域名由ServerIP+nip.io组成
-例如你的服务器IP为1.3.5.7，对应的域名则是1.3.5.7.nip.io
+通过sslip.io提供的免费域名解析服务获取，域名由ServerIP+sslip.io组成
+例如你的服务器IP为1.3.5.7，对应的域名则是1.3.5.7.sslip.io
 ```
 
 - 指定域名
@@ -96,7 +96,7 @@ systemctl stop caddy.service && systemctl disable caddy.service && rm -rf /etc/c
 仅建议在免费域名被阻断时使用
 ```
 在密码后加入域名即可指定域名重新安装，密码与域名之间应使用空格分隔，执行命令如下：
-systemctl stop caddy.service && curl https://raw.githubusercontent.com/eastmaple/easytrojan/main/easytrojan.sh -o easytrojan.sh && chmod +x easytrojan.sh && bash easytrojan.sh password yourdomain
+systemctl stop caddy.service && curl https://raw.githubusercontent.com/iii80/easytrojan/main/easytrojan.sh -o easytrojan.sh && chmod +x easytrojan.sh && bash easytrojan.sh password yourdomain
 
 *当指定域名后，如需切换回免费域名，必须完全卸载脚本，重新执行首次安装命令
 ```
@@ -130,7 +130,7 @@ sudo ufw disable
 
 IP为1.3.5.7 密码为123456的服务器示例
 ```
-地址：1.3.5.7.nip.io  #根据服务器IP生成（即免费域名）
+地址：1.3.5.7.sslip.io  #根据服务器IP生成（即免费域名）
 端口：443
 密码：123456          #安装时设置的密码
 ALPN: h2/http1.1
@@ -189,7 +189,7 @@ ALPN: h2/http1.1
                 "security": "tls",
                 "tlsSettings": {
                     "allowInsecure": false,
-                    "serverName": "1.3.5.7.nip.io",  #连接trojan的域名
+                    "serverName": "1.3.5.7.sslip.io",  #连接trojan的域名
                     "fingerprint": "chrome",
                     "alpn": "h2,http/1.1"
                 }
@@ -207,7 +207,7 @@ ALPN: h2/http1.1
     port: 443
     password: 123456
     udp: true
-    sni: 1.3.5.7.nip.io
+    sni: 1.3.5.7.sslip.io
     alpn:
       - h2
       - http/1.1
