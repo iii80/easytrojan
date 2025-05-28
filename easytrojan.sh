@@ -3,12 +3,31 @@
 # Notes: EasyTrojan for CentOS/RedHat 7+ Debian 9+ and Ubuntu 16+
 #
 # Project home page:
-#        https://github.com/eastmaple/easytrojan
+#        https://github.com/autotls/easytrojan
+#
+# How to use:
+#
+#        Install (Default)
+#        chmod +x easytrojan.sh && bash easytrojan.sh password
+#
+#        Install (Custom Domain)
+#        chmod +x easytrojan.sh && bash easytrojan.sh password yourdomain
+# 
+#        Uninstall (Only Service)
+#        systemctl stop caddy.service && systemctl disable caddy.service
+#
+#        Uninstall (All Data)
+#        systemctl stop caddy.service && systemctl disable caddy.service
+#        rm -rf /etc/caddy /usr/local/bin/caddy /etc/systemd/system/caddy.service
+#
 
 trojan_passwd=$1
 caddy_domain=$2
 address_ip=$(curl ipv4.ip.sb)
-nip_domain=${address_ip}.nip.io
+long_number=$(echo "$address_ip" | awk -F. '{printf "%u\n", $4 * 256^3 + $3 * 256^2 + $2 * 256 + $1}')
+nip_domain="ip$long_number.mobgslb.tbcache.com"
+trojan_link="trojan://$trojan_passwd@$address_ip:443?security=tls&sni=$nip_domain&alpn=h2%2Chttp%2F1.1&fp=chrome&type=tcp#easytrojan-$address_ip"
+base64_link=$(echo -n "$trojan_link" | base64 -w 0)
 check_port=$(ss -Hlnp sport = :80 or sport = :443)
 
 [ "$trojan_passwd" = "" ] && { echo "Error: You must enter a trojan's password to run this script"; exit 1; }
@@ -17,19 +36,6 @@ check_port=$(ss -Hlnp sport = :80 or sport = :443)
 [ "$check_port" != "" ] && { echo "Error: Port 80 or 443 is already in use"; exit 1; }
 
 check_cmd () { command -v "$1" &>/dev/null; }
-
-if ! check_cmd tar; then
-    echo "tar: command not found, installing..."
-    if check_cmd yum; then
-        yum install -y tar
-    elif check_cmd apt-get; then
-        apt-get install -y tar
-    elif check_cmd dnf; then
-        dnf install -y tar
-    else
-        echo "Error: Unable to install tar"; exit 1
-    fi
-fi
 
 case $(uname -m) in
     x86_64)
@@ -44,7 +50,7 @@ case $(uname -m) in
         ;;
 esac
 
-curl -L $caddy_url | tar -zx -C /usr/local/bin caddy
+curl -L $caddy_url | tar -zx -C /usr/local/bin caddy && chmod +x /usr/local/bin/caddy
 
 if ! id caddy &>/dev/null; then groupadd --system caddy; useradd --system -g caddy -s "$(command -v nologin)" caddy; fi
 
@@ -71,8 +77,7 @@ cat > /etc/caddy/Caddyfile <<EOF
     }
 }
 :443, $nip_domain {
-    tls $address_ip@nip.io {
-        protocols tls1.2 tls1.2
+    tls $address_ip@tbcache.com {
         ciphers TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256 TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
     }
     log {
@@ -117,7 +122,7 @@ EOF
 if ip link show lo | grep -q DOWN; then ip link set lo up; fi
 systemctl daemon-reload && systemctl restart caddy.service && systemctl enable caddy.service
 
-curl -X POST -H "Content-Type: application/json" -d "{\"password\": \"$trojan_passwd\"}" http://127.0.0.1:2019/trojan/users/add
+curl -X POST -H "Content-Type: application/json" -d "{\"password\": \"$trojan_passwd\"}" http://localhost:2019/trojan/users/add
 echo "$trojan_passwd" >> /etc/caddy/trojan/passwd.txt && sort /etc/caddy/trojan/passwd.txt | uniq > /etc/caddy/trojan/passwd.tmp && mv -f /etc/caddy/trojan/passwd.tmp /etc/caddy/trojan/passwd.txt
 
 echo "Obtaining and Installing an SSL Certificate..."
@@ -240,17 +245,18 @@ echo "net.core.default_qdisc = fq" >>/etc/sysctl.conf
 echo "net.ipv4.tcp_congestion_control = bbr" >>/etc/sysctl.conf
 fi
 
-sysctl -p
+sysctl -p > /dev/null
 
 check_http=$(curl -L http://"$nip_domain")
-[ "$check_http" != "Service Unavailable" ] && { echo "You have installed EasyTrojan 2.0,please enable TCP port 80 and 443"; exit 1; }
+[ "$check_http" != "Service Unavailable" ] && { echo "You have installed EasyTrojan 3.0,please enable TCP port 80 and 443"; exit 1; }
 
 clear
 
-echo "You have successfully installed EasyTrojan 3.0"
-echo "服务器参数如下:"
-echo "ip: $address_ip".nip.io
-echo "port: 443"
-echo "password: $trojan_passwd"
-echo "security: tls"
-echo "type: tcp"
+echo -e "You have successfully installed EasyTrojan 3.0"
+echo -e "You can view your Trojan client configuration with the command 'cat /etc/caddy/trojan.link'\n"
+echo -e "Trojan Address:" | tee /etc/caddy/trojan.link
+echo -e "$nip_domain | Port: 443 | Password: $trojan_passwd | Alpn: h2,http/1.1\n" | tee -a /etc/caddy/trojan.link
+echo -e "Trojan Link:" | tee -a /etc/caddy/trojan.link
+echo -e "$trojan_link\n" | tee -a /etc/caddy/trojan.link
+echo -e "You can share your Trojan link securely with the website:" | tee -a /etc/caddy/trojan.link
+echo -e "https://autoxtls.github.io/base64.html#$base64_link\n" | tee -a /etc/caddy/trojan.link
